@@ -1,0 +1,558 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="从 iOS6 开始，iOS 引入了增量更新(delta update)，App Store 对应用的新版本更新的提交，会自动生成增量更新包。  用户在更新应用的新版本的时候，只会下载差异部分，这样就加快了下载速度，也同时提升了安装速度。  本文介绍了 iOS 的增量更新机制，以及优化应用安装包大小时应注意的问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS 增量更新机制介绍">
+<meta property="og:url" content="http://wisonlin.github.com/2014/08/09/2014-08-09-ios-zeng-liang-geng-xin-ji-zhi-jie-shao/index.html">
+<meta property="og:site_name" content="苹果君的博客">
+<meta property="og:description" content="从 iOS6 开始，iOS 引入了增量更新(delta update)，App Store 对应用的新版本更新的提交，会自动生成增量更新包。  用户在更新应用的新版本的时候，只会下载差异部分，这样就加快了下载速度，也同时提升了安装速度。  本文介绍了 iOS 的增量更新机制，以及优化应用安装包大小时应注意的问题。">
+<meta property="og:updated_time" content="2014-08-09T11:52:16.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS 增量更新机制介绍">
+<meta name="twitter:description" content="从 iOS6 开始，iOS 引入了增量更新(delta update)，App Store 对应用的新版本更新的提交，会自动生成增量更新包。  用户在更新应用的新版本的时候，只会下载差异部分，这样就加快了下载速度，也同时提升了安装速度。  本文介绍了 iOS 的增量更新机制，以及优化应用安装包大小时应注意的问题。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> iOS 增量更新机制介绍 | 苹果君的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">苹果君的博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Happy Coding, Happy Living</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                iOS 增量更新机制介绍
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2014-08-09T19:41:08+08:00" content="2014-08-09">
+              2014-08-09
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>  从 iOS6 开始，iOS 引入了增量更新(delta update)，App Store 对应用的新版本更新的提交，会自动生成增量更新包。<br>  用户在更新应用的新版本的时候，只会下载差异部分，这样就加快了下载速度，也同时提升了安装速度。<br>  本文介绍了 iOS 的增量更新机制，以及优化应用安装包大小时应注意的问题。</p>
+<a id="more"></a>
+<p>###差异化更新的机制：</p>
+<p>  自动生成更新包的时候，App Store 将会比较应用的每一个老版本和新版本的差异，针对每一个旧版本，生成一个更新包，每一个更新包里面，只包含了两个版本之间有变化的文件，而没有变化的文件则不包含。应用更新包中除了有差异的内容之外，还包括了一个简单的命令脚本，存储增加，更新，删除某个文件的命令，安装的时候将被执行。<br>  差异化更新的这个过程，对于开发者和用户都是透明的，并且，用更新包更新应用和直接下载完整包安装没有任何区别。</p>
+<p>###差异化更新的好处：</p>
+<p>  有了差异化更新之后，更新包将会比应用的完整安装包小很多，并且安装也将更快。<br>  我们都知道，蜂窝网络下，应用的安装包超过某一个大小的时候，将不支持下载。但是，如果更新包小于这个限制大小的话，大型应用也可以在蜂窝网络下更新。</p>
+<p>###针对这样的机制，有两个建议，可以优化用户更新应用的速度：</p>
+<ol>
+<li>不要对文件进行不必要的更改，可以在发布之前用文件比较工具比较一下。</li>
+<li><p>如果可能，将频繁变化的文件和其他文件分开，减少差异更新包的大小，以及加快安装速度。</p>
+<p>在 iOS 6 上，差异更新的粒度是文件级，就是说文件一旦有变化，将会被完全放入更新包中，比如有个10MB的文件，只改动了里面的一点点内容，那么整个10MB的文件都会被塞进更新包中下发给用户。</p>
+<p>但是，在 iOS 7 以后，差异更新的粒度优化成了字节级的比较，更新包中只会包含文件之间的差异部分，而不是整个文件。这样的话，如果文件之间只有小小的差异的时候，更新包将会比之前小很多，但是同时也降低了安装的速度。<br>所以，即使是在iOS 7之后，以上的两条建议依然很重要。在 iOS 7 以上的系统，减少文件改动，和隔离频繁更改的文件，不仅会减小更新包大小，也会提高安装速度。</p>
+</li>
+</ol>
+<p>###注意：</p>
+<ol>
+<li>这个功能只有在开发者提交新版本应用到 App Store 的时候才有用，比如通过企业证书直接分发应用的时候是没有这个功能的。</li>
+<li>本文描述的文件差异比较，不包括文件的创建时间，修改时间。也就是说，当我们的文件只有创建时间和修改时间被更改的时候，文件是不会被更新的。所以我们的应用，不要依赖安装包里面文件的创建时间和修改时间。</li>
+</ol>
+<p>###我们的工作：</p>
+<p>  iOS 的这套方案非常优雅，不需要开发者做额外的工作，并且更新中没有不必要的开销，这得益于渠道的统一。我们优化安装包大小的时候，应该包含两个目标：</p>
+<ol>
+<li>通过减少安装包文件，压缩安装包文件，来提升用户的第一次安装应用的体验。</li>
+<li><p>同时，减少文件更改，隔离文件频繁变动的部分，来提升用户的升级应用的体验。</p>
+<p>同时，在过去我们优化安装包大小的时候，其实踩到了两个陷阱：</p>
+</li>
+<li><p>我们会通过压缩安装包的所有图片，来减小安装包的大小，其实这样会更改大量的文件，导致更新包变大，需要权衡压缩效果和对更新包大小的影响。</p>
+</li>
+<li>我们会通过合并图片资源文件，来减小文件大小，以及提升读取文件速度。这样合并后的大文件的更新频率会提高，增大了更新包大小，以及降低了安装速度(iOS7以上会增加合并文件的操作)。所以这种方案也是需要权衡的。</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2014/08/09/2014-08-09-pan-duan-zi-ji-de-ying-yong-shi-fou-bei-diao-shi-qi-dong/" rel="next" title="判断自己的应用是否被调试启动">
+                <i class="fa fa-chevron-left"></i> 判断自己的应用是否被调试启动
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2014/08/10/2014-08-10-nshashtable-yin-qi-de-xing-neng-wen-ti/" rel="prev" title="NSHashTable 引起的性能问题">
+                NSHashTable 引起的性能问题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="Wison Lin" />
+          <p class="site-author-name" itemprop="name">Wison Lin</p>
+          <p class="site-description motion-element" itemprop="description">Happy Coding, Happy Living</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wison Lin</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=0.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>

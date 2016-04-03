@@ -1,0 +1,556 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="iOS8 对页面的旋转机制做了一些改变，这些改动也带来了不少问题。本文介绍三个已经发现的问题，并尝试给出解决方案。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS8 转屏 Bug 汇总">
+<meta property="og:url" content="http://wisonlin.github.com/2014/10/19/2014-10-19-ios8-zhuan-ping-bug-hui-zong/index.html">
+<meta property="og:site_name" content="苹果君的博客">
+<meta property="og:description" content="iOS8 对页面的旋转机制做了一些改变，这些改动也带来了不少问题。本文介绍三个已经发现的问题，并尝试给出解决方案。">
+<meta property="og:image" content="http://wisonlin.github.com/images/2014-10-20-1.png">
+<meta property="og:image" content="http://wisonlin.github.com/images/2014-10-20-2.png">
+<meta property="og:image" content="http://wisonlin.github.com/images/2014-10-20-3.jpg">
+<meta property="og:image" content="http://wisonlin.github.com/images/2014-10-20-4.png">
+<meta property="og:image" content="http://wisonlin.github.com/images/2014-10-20-5.png">
+<meta property="og:updated_time" content="2014-10-19T16:08:56.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS8 转屏 Bug 汇总">
+<meta name="twitter:description" content="iOS8 对页面的旋转机制做了一些改变，这些改动也带来了不少问题。本文介绍三个已经发现的问题，并尝试给出解决方案。">
+<meta name="twitter:image" content="http://wisonlin.github.com/images/2014-10-20-1.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> iOS8 转屏 Bug 汇总 | 苹果君的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">苹果君的博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Happy Coding, Happy Living</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-th fa-fw"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                iOS8 转屏 Bug 汇总
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2014-10-19T22:53:36+08:00" content="2014-10-19">
+              2014-10-19
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>iOS8 对页面的旋转机制做了一些改变，这些改动也带来了不少问题。<br>本文介绍三个已经发现的问题，并尝试给出解决方案。</p>
+<a id="more"></a>
+<h3 id="问题一：页面的旋转动画执行过程中dismiss，会让底下的不可旋转页面发生旋转。"><a href="#问题一：页面的旋转动画执行过程中dismiss，会让底下的不可旋转页面发生旋转。" class="headerlink" title="问题一：页面的旋转动画执行过程中dismiss，会让底下的不可旋转页面发生旋转。"></a>问题一：页面的旋转动画执行过程中dismiss，会让底下的不可旋转页面发生旋转。</h3><p>先看一下这个bug的Qzone截图：</p>
+<p><img src="/images/2014-10-20-1.png" width="568" height="320"></p>
+<p>“动态” 这个页面，是不支持横屏的，但是却还是被系统旋转了。<br>此时，已经按照屏幕宽度创建好的视图自然不能拓展到充满屏幕。<br>接下来我们讨论一下重现的步骤。</p>
+<ol>
+<li>首先，准备阶段，手机不锁定屏幕方向。页面A不可旋转，页面B可旋转，手机竖屏状态下，A present B。</li>
+<li>接着，复现阶段。dismiss B，同时旋转手机到横屏。</li>
+<li>最后，看现象。页面B发生了旋转，同时页面B消失，A页面也发生了旋转。  </li>
+</ol>
+<p>如果没有出现问题，可能要多试几次，这里的同时比较难，<strong>本质是要让页面发生旋转动画的时候，触发dismiss逻辑。</strong></p>
+<p>以下是苹果自家App，Apple Store的截图，10月6日的版本，该版本的改动是兼容iOS8 。</p>
+<p><img src="/images/2014-10-20-2.png" width="568" height="320"></p>
+<p>以下是手机QQ 10月8日更新的版本。</p>
+<p><img src="/images/2014-10-20-3.jpg" width="568" height="320"></p>
+<p>影响面:<br>在用户那里出现这个bug的概率有点低，但是还是存在一定量。<br>并且一旦出现，所有假设自己一定在竖屏状态下工作的页面都会出问题。<br>因为此时页面的宽度其实是手机屏幕的高度。假如某一些控件创建时依赖了页面的宽度，那么可能回到竖屏的时候表现异常，由于假设了一定在竖屏状态下工作，所以该页面也当然不会处理转屏的情况。</p>
+<p>解决方法:<br>简而言之，<strong>dismiss的时候，让页面不可旋转；页面旋转的时候，不让用户触发 dismiss。就可以了。</strong></p>
+<h3 id="问题二：屏幕横屏时，UIScreen-的宽高会发生变化"><a href="#问题二：屏幕横屏时，UIScreen-的宽高会发生变化" class="headerlink" title="问题二：屏幕横屏时，UIScreen 的宽高会发生变化"></a>问题二：屏幕横屏时，UIScreen 的宽高会发生变化</h3><p>iOS 8 已经没有屏幕旋转的概念，只有屏幕大小变化的概念，详细看 WWDC 2014。<br>也就是说，在 iOS 8 上，当页面横屏的时候，不会收到屏幕旋转的通知，而是会收到屏幕大小改变的通知。<br>并且，此时 UIScreen 和 UIWindow 的宽高都会发生变化。<br>以下是 iOS 8 横屏时的视图树：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;UIWindow: 0x178d2320; frame = (0 0; 568 320);&gt;</span><br><span class="line">   | &lt;UITransitionView: 0x17fe3180; frame = (0 0; 568 320);&gt;</span><br><span class="line">   |    | &lt;UILayoutContainerView: 0x17fd6280; frame = (0 0; 568 320);&gt;</span><br><span class="line">   |    |    | &lt;UINavigationTransitionView: 0x17fdb4f0; frame = (0 0; 568 320);&gt;</span><br><span class="line"></span><br><span class="line">以及此时的屏幕大小如下：   </span><br><span class="line">&lt;UIScreen: 0x15863810; bounds = &#123; &#123;0, 0&#125;, &#123;568, 320&#125; &#125;; mode = &lt;UIScreenMode: 0x147be4a0; size = 640.000000 x 1136.000000&gt;&gt;</span><br></pre></td></tr></table></figure>
+<p>注意宽高已经相反了，对比同样情况下的 iOS 7 的视图树：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;UIWindow: 0x79e59460; frame = (0 0; 320 568);&gt;</span><br><span class="line">   | &lt;UILayoutContainerView: 0x7b18e140; frame = (0 0; 320 568); transform = [0, 1, -1, 0, 0, 0]; &gt;</span><br><span class="line">   |    | &lt;UINavigationTransitionView: 0x7b17b390; frame = (0 0; 568 320); &gt;</span><br><span class="line"></span><br><span class="line">&lt;UIScreen: 0x79e48cd0; bounds = &#123; &#123;0, 0&#125;, &#123;320, 568&#125; &#125;; mode = &lt;UIScreenMode: 0x79fa0520; size = 640.000000 x 1136.000000&gt;&gt;</span><br></pre></td></tr></table></figure>
+<p>仔细看看会发现，iOS 7 的屏幕没有变化，通过中间的 ContainerView 加上 transform 来达到下层视图的旋转。</p>
+<p>这种改变会带来什么样的后果的呢？<br>答案是，所有依赖屏幕宽高来创建的视图或者布局信息都会出问题，因为宽度随时都会变化。<br>截一个Qzone的Feed图片：</p>
+<p><img src="/images/2014-10-20-4.png" width="320" height="568"><br><img src="/images/2014-10-20-5.png" width="320" height="568"></p>
+<p>这里的文字排版，超出了屏幕的宽。<br>重现步骤如下：弱网络，上拉加载更多时，随便点击一张图片进图片浮层并横屏。<br>等待后面 Feed 接收完毕并进行排版，此时排版取的宽度，会是手机屏幕的高度。<br>排版完成后，从浮层回来，Feed 内容就超出屏幕的宽度了。<br>并且这个错误的排版会一直保持，除非触发再次排版。<br>解决方法是，取宽度的时候不要直接去屏幕宽度，而是 <strong> 先判断屏幕方向，竖屏去宽度，横屏取高度。</strong></p>
+<h3 id="问题三：同一个导航栏中横屏界面-pop-出竖屏界面的时候，动画异常。"><a href="#问题三：同一个导航栏中横屏界面-pop-出竖屏界面的时候，动画异常。" class="headerlink" title="问题三：同一个导航栏中横屏界面 pop 出竖屏界面的时候，动画异常。"></a>问题三：同一个导航栏中横屏界面 pop 出竖屏界面的时候，动画异常。</h3><p>第三个问题比较复杂，iOS8改了横屏界面 pop 竖屏界面的动画，跟iOS 7 有点不同。<br>具体实现移步 <a href="http://wison.me/blog/2014/10/19/ios8-dao-hang-lan-kong-zhi-qi-heng-ping-ye-mian-dan-chu-shu-ping-ye-mian-de-shi-xian/" target="_blank" rel="external">iOS8 导航栏横屏页面弹出竖屏页面的实现</a>，<br>目前还没有找到好的解决方法，直接换成 present 规避之。<br>或者可以尝试一下自定义动画，有兴趣的可以尝试一下。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2014/10/19/2014-10-19-ios8-dao-hang-lan-kong-zhi-qi-heng-ping-ye-mian-dan-chu-shu-ping-ye-mian-de-shi-xian/" rel="next" title="iOS8 导航控制器横屏页面弹出竖屏页面的实现">
+                <i class="fa fa-chevron-left"></i> iOS8 导航控制器横屏页面弹出竖屏页面的实现
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="Wison Lin" />
+          <p class="site-author-name" itemprop="name">Wison Lin</p>
+          <p class="site-description motion-element" itemprop="description">Happy Coding, Happy Living</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">8</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题一：页面的旋转动画执行过程中dismiss，会让底下的不可旋转页面发生旋转。"><span class="nav-number">1.</span> <span class="nav-text">问题一：页面的旋转动画执行过程中dismiss，会让底下的不可旋转页面发生旋转。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题二：屏幕横屏时，UIScreen-的宽高会发生变化"><span class="nav-number">2.</span> <span class="nav-text">问题二：屏幕横屏时，UIScreen 的宽高会发生变化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题三：同一个导航栏中横屏界面-pop-出竖屏界面的时候，动画异常。"><span class="nav-number">3.</span> <span class="nav-text">问题三：同一个导航栏中横屏界面 pop 出竖屏界面的时候，动画异常。</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wison Lin</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=0.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
