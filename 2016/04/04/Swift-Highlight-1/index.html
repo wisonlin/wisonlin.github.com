@@ -57,16 +57,19 @@
 
 
 
-<meta name="description" content="从 iOS6 开始，iOS 引入了增量更新(delta update)，App Store 对应用的新版本更新的提交，会自动生成增量更新包。  用户在更新应用的新版本的时候，只会下载差异部分，这样就加快了下载速度，也同时提升了安装速度。  本文介绍了 iOS 的增量更新机制，以及优化应用安装包大小时应注意的问题。">
+<meta name="description" content="Unlike Objective-C, Swift enables you to set sub-properties of a structure property directly.
+跟 Objective-C 不一样，Swift 中的一个属性是结构体的话，这个结构体的变量是可以被直接改变的。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS 增量更新机制介绍">
-<meta property="og:url" content="http://wisonlin.github.com/2014/08/09/2014-08-09-ios-zeng-liang-geng-xin-ji-zhi-jie-shao/index.html">
+<meta property="og:title" content="Swift Highlight 1">
+<meta property="og:url" content="http://wisonlin.github.com/2016/04/04/Swift-Highlight-1/index.html">
 <meta property="og:site_name" content="苹果君的博客">
-<meta property="og:description" content="从 iOS6 开始，iOS 引入了增量更新(delta update)，App Store 对应用的新版本更新的提交，会自动生成增量更新包。  用户在更新应用的新版本的时候，只会下载差异部分，这样就加快了下载速度，也同时提升了安装速度。  本文介绍了 iOS 的增量更新机制，以及优化应用安装包大小时应注意的问题。">
-<meta property="og:updated_time" content="2014-08-09T11:52:16.000Z">
+<meta property="og:description" content="Unlike Objective-C, Swift enables you to set sub-properties of a structure property directly.
+跟 Objective-C 不一样，Swift 中的一个属性是结构体的话，这个结构体的变量是可以被直接改变的。">
+<meta property="og:updated_time" content="2016-04-04T16:22:07.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS 增量更新机制介绍">
-<meta name="twitter:description" content="从 iOS6 开始，iOS 引入了增量更新(delta update)，App Store 对应用的新版本更新的提交，会自动生成增量更新包。  用户在更新应用的新版本的时候，只会下载差异部分，这样就加快了下载速度，也同时提升了安装速度。  本文介绍了 iOS 的增量更新机制，以及优化应用安装包大小时应注意的问题。">
+<meta name="twitter:title" content="Swift Highlight 1">
+<meta name="twitter:description" content="Unlike Objective-C, Swift enables you to set sub-properties of a structure property directly.
+跟 Objective-C 不一样，Swift 中的一个属性是结构体的话，这个结构体的变量是可以被直接改变的。">
 
 
 
@@ -84,7 +87,7 @@
   };
 </script>
 
-  <title> iOS 增量更新机制介绍 | 苹果君的博客 </title>
+  <title> Swift Highlight 1 | 苹果君的博客 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -204,7 +207,7 @@
             
             
               
-                iOS 增量更新机制介绍
+                Swift Highlight 1
               
             
           </h1>
@@ -216,30 +219,11 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2014-08-09T19:41:08+08:00" content="2014-08-09">
-              2014-08-09
+            <time itemprop="dateCreated" datetime="2016-04-04T00:32:27+08:00" content="2016-04-04">
+              2016-04-04
             </time>
           </span>
 
-          
-            <span class="post-category" >
-              &nbsp; | &nbsp;
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-              
-                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/iOS/" itemprop="url" rel="index">
-                    <span itemprop="name">iOS</span>
-                  </a>
-                </span>
-
-                
-                
-
-              
-            </span>
           
 
           
@@ -262,36 +246,19 @@
       
 
       
-        <p>  从 iOS6 开始，iOS 引入了增量更新(delta update)，App Store 对应用的新版本更新的提交，会自动生成增量更新包。<br>  用户在更新应用的新版本的时候，只会下载差异部分，这样就加快了下载速度，也同时提升了安装速度。<br>  本文介绍了 iOS 的增量更新机制，以及优化应用安装包大小时应注意的问题。</p>
+        <blockquote>
+<p>Unlike Objective-C, Swift enables you to set sub-properties of a structure property directly.</p>
+<p>跟 Objective-C 不一样，Swift 中的一个属性是结构体的话，这个结构体的变量是可以被直接改变的。</p>
+</blockquote>
 <a id="more"></a>
-<p>###差异化更新的机制：</p>
-<p>  自动生成更新包的时候，App Store 将会比较应用的每一个老版本和新版本的差异，针对每一个旧版本，生成一个更新包，每一个更新包里面，只包含了两个版本之间有变化的文件，而没有变化的文件则不包含。应用更新包中除了有差异的内容之外，还包括了一个简单的命令脚本，存储增加，更新，删除某个文件的命令，安装的时候将被执行。<br>  差异化更新的这个过程，对于开发者和用户都是透明的，并且，用更新包更新应用和直接下载完整包安装没有任何区别。</p>
-<p>###差异化更新的好处：</p>
-<p>  有了差异化更新之后，更新包将会比应用的完整安装包小很多，并且安装也将更快。<br>  我们都知道，蜂窝网络下，应用的安装包超过某一个大小的时候，将不支持下载。但是，如果更新包小于这个限制大小的话，大型应用也可以在蜂窝网络下更新。</p>
-<p>###针对这样的机制，有两个建议，可以优化用户更新应用的速度：</p>
-<ol>
-<li>不要对文件进行不必要的更改，可以在发布之前用文件比较工具比较一下。</li>
-<li><p>如果可能，将频繁变化的文件和其他文件分开，减少差异更新包的大小，以及加快安装速度。</p>
-<p>在 iOS 6 上，差异更新的粒度是文件级，就是说文件一旦有变化，将会被完全放入更新包中，比如有个10MB的文件，只改动了里面的一点点内容，那么整个10MB的文件都会被塞进更新包中下发给用户。</p>
-<p>但是，在 iOS 7 以后，差异更新的粒度优化成了字节级的比较，更新包中只会包含文件之间的差异部分，而不是整个文件。这样的话，如果文件之间只有小小的差异的时候，更新包将会比之前小很多，但是同时也降低了安装的速度。<br>所以，即使是在iOS 7之后，以上的两条建议依然很重要。在 iOS 7 以上的系统，减少文件改动，和隔离频繁更改的文件，不仅会减小更新包大小，也会提高安装速度。</p>
-</li>
-</ol>
-<p>###注意：</p>
-<ol>
-<li>这个功能只有在开发者提交新版本应用到 App Store 的时候才有用，比如通过企业证书直接分发应用的时候是没有这个功能的。</li>
-<li>本文描述的文件差异比较，不包括文件的创建时间，修改时间。也就是说，当我们的文件只有创建时间和修改时间被更改的时候，文件是不会被更新的。所以我们的应用，不要依赖安装包里面文件的创建时间和修改时间。</li>
-</ol>
-<p>###我们的工作：</p>
-<p>  iOS 的这套方案非常优雅，不需要开发者做额外的工作，并且更新中没有不必要的开销，这得益于渠道的统一。我们优化安装包大小的时候，应该包含两个目标：</p>
-<ol>
-<li>通过减少安装包文件，压缩安装包文件，来提升用户的第一次安装应用的体验。</li>
-<li><p>同时，减少文件更改，隔离文件频繁变动的部分，来提升用户的升级应用的体验。</p>
-<p>同时，在过去我们优化安装包大小的时候，其实踩到了两个陷阱：</p>
-</li>
-<li><p>我们会通过压缩安装包的所有图片，来减小安装包的大小，其实这样会更改大量的文件，导致更新包变大，需要权衡压缩效果和对更新包大小的影响。</p>
-</li>
-<li>我们会通过合并图片资源文件，来减小文件大小，以及提升读取文件速度。这样合并后的大文件的更新频率会提高，增大了更新包大小，以及降低了安装速度(iOS7以上会增加合并文件的操作)。所以这种方案也是需要权衡的。</li>
-</ol>
+<p>比如在 Objective-C 中，以下代码会变异错误：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.frame.size.width = 2.0;  // compile error</span><br></pre></td></tr></table></figure></p>
+<p>必须这样写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CGRect newFrame = view.frame;</span><br><span class="line">newFrame.size.width = 2.0;</span><br><span class="line">view.frame = newFrame;</span><br></pre></td></tr></table></figure></p>
+<p>在 Swift 中，则可以直接更改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.frame.size.width = 2.0;  // compile success</span><br></pre></td></tr></table></figure></p>
+<p>上述这个改变视图宽高的例子，出现的场景比较常见，所以在 Objective-C 中其实有一种简单的方法，就是创建一个 Category，收归这些代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// in Category of UIView</span><br><span class="line">- (void)setWidth:(CGFloat)width</span><br><span class="line">&#123;</span><br><span class="line">  CGRect newFrame = view.frame;</span><br><span class="line">  newFrame.size.width = 2.0;</span><br><span class="line">  view.frame = newFrame;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这样，使用的时候就不会太罗嗦：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.width = 2.0;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>Swift 刚出的时候学过一次，但是中间又好久没碰所以忘得差不多了，趁着 Swift 3.0 即将到来，赶紧重温了一下 Swift 2.2，这一次我想通过一系列的文章来沉淀，帮助记忆。不过现在网上关于 Swift 的技术文章实在太多，优秀的也非常多，所以我想从另一个角度去讲解 Swift，取名 <code>Swift Highlight</code>，写一些 Swift 相比老旧的 Objective-C 来说，令人眼前一亮的地方，或者它解决了 Objective-C 一些令人诟病的地方。希望能够让大家在学习 Swift 特性的同时也能够知道 Swift 为什么要这么做，好在哪里，也能够对 Objective-C 有更深层次的认识。</p>
+</blockquote>
 
       
     </div>
@@ -309,17 +276,13 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2014/08/09/2014-08-09-pan-duan-zi-ji-de-ying-yong-shi-fou-bei-diao-shi-qi-dong/" rel="next" title="判断自己的应用是否被调试启动">
-                <i class="fa fa-chevron-left"></i> 判断自己的应用是否被调试启动
+              <a href="/2014/10/19/2014-10-19-ios8-zhuan-ping-bug-hui-zong/" rel="next" title="iOS8 转屏 Bug 汇总">
+                <i class="fa fa-chevron-left"></i> iOS8 转屏 Bug 汇总
               </a>
             
           </div>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2014/08/10/2014-08-10-nshashtable-yin-qi-de-xing-neng-wen-ti/" rel="prev" title="NSHashTable 引起的性能问题">
-                NSHashTable 引起的性能问题 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
