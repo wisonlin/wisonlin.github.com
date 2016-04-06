@@ -65,7 +65,7 @@
 <meta property="og:site_name" content="苹果君的博客">
 <meta property="og:description" content="Unlike Objective-C, Swift enables you to set sub-properties of a structure property directly.
 跟 Objective-C 不一样，Swift 中的一个属性是结构体的话，这个结构体的变量是可以被直接改变的。">
-<meta property="og:updated_time" content="2016-04-04T16:22:07.000Z">
+<meta property="og:updated_time" content="2016-04-05T16:54:46.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Swift Highlight 1">
 <meta name="twitter:description" content="Unlike Objective-C, Swift enables you to set sub-properties of a structure property directly.
@@ -251,7 +251,7 @@
 <p>跟 Objective-C 不一样，Swift 中的一个属性是结构体的话，这个结构体的变量是可以被直接改变的。</p>
 </blockquote>
 <a id="more"></a>
-<p>比如在 Objective-C 中，以下代码会变异错误：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.frame.size.width = 2.0;  // compile error</span><br></pre></td></tr></table></figure></p>
+<p>比如在 Objective-C 中，以下代码会编译错误：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.frame.size.width = 2.0;  // compile error</span><br></pre></td></tr></table></figure></p>
 <p>必须这样写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CGRect newFrame = view.frame;</span><br><span class="line">newFrame.size.width = 2.0;</span><br><span class="line">view.frame = newFrame;</span><br></pre></td></tr></table></figure></p>
 <p>在 Swift 中，则可以直接更改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.frame.size.width = 2.0;  // compile success</span><br></pre></td></tr></table></figure></p>
 <p>上述这个改变视图宽高的例子，出现的场景比较常见，所以在 Objective-C 中其实有一种简单的方法，就是创建一个 Category，收归这些代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// in Category of UIView</span><br><span class="line">- (void)setWidth:(CGFloat)width</span><br><span class="line">&#123;</span><br><span class="line">  CGRect newFrame = view.frame;</span><br><span class="line">  newFrame.size.width = 2.0;</span><br><span class="line">  view.frame = newFrame;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -283,6 +283,10 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/05/Swift-Highlight-2/" rel="prev" title="Swift Highlight 2">
+                Swift Highlight 2 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -350,7 +354,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-count">10</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
