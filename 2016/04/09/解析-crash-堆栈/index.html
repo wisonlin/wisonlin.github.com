@@ -1,0 +1,530 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,400italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=0.5.0" />
+
+
+
+
+
+
+<meta name="description" content="本文介绍了如何解析 iOS 的 crash 堆栈，分别使用了 symbolicatecrash 来自动解析整个堆栈，以及使用 atos 来解析单个地址的符号。在 iOS 开发中，解决 crash 问题是比较常见的工作。其中能够解析出符号当然是定位问题的开始。实际工作中，也有看到很多人其实会卡在解析符号这里，遇到这种情况，可以按照本文中的做法解决。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="解析 crash 堆栈">
+<meta property="og:url" content="http://wisonlin.github.com/2016/04/09/解析-crash-堆栈/index.html">
+<meta property="og:site_name" content="苹果君的博客">
+<meta property="og:description" content="本文介绍了如何解析 iOS 的 crash 堆栈，分别使用了 symbolicatecrash 来自动解析整个堆栈，以及使用 atos 来解析单个地址的符号。在 iOS 开发中，解决 crash 问题是比较常见的工作。其中能够解析出符号当然是定位问题的开始。实际工作中，也有看到很多人其实会卡在解析符号这里，遇到这种情况，可以按照本文中的做法解决。">
+<meta property="og:updated_time" content="2016-04-09T13:47:29.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="解析 crash 堆栈">
+<meta name="twitter:description" content="本文介绍了如何解析 iOS 的 crash 堆栈，分别使用了 symbolicatecrash 来自动解析整个堆栈，以及使用 atos 来解析单个地址的符号。在 iOS 开发中，解决 crash 问题是比较常见的工作。其中能够解析出符号当然是定位问题的开始。实际工作中，也有看到很多人其实会卡在解析符号这里，遇到这种情况，可以按照本文中的做法解决。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> 解析 crash 堆栈 | 苹果君的博客 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">苹果君的博客</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">Happy Coding, Happy Living</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                解析 crash 堆栈
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-09T20:26:06+08:00" content="2016-04-09">
+              2016-04-09
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文介绍了如何解析 iOS 的 crash 堆栈，分别使用了 <code>symbolicatecrash</code> 来自动解析整个堆栈，以及使用 <code>atos</code> 来解析单个地址的符号。<br>在 iOS 开发中，解决 crash 问题是比较常见的工作。其中能够解析出符号当然是定位问题的开始。<br>实际工作中，也有看到很多人其实会卡在解析符号这里，遇到这种情况，可以按照本文中的做法解决。<br><a id="more"></a></p>
+<h3 id="使用-symbolicatecrash-解析堆栈"><a href="#使用-symbolicatecrash-解析堆栈" class="headerlink" title="使用 symbolicatecrash 解析堆栈"></a>使用 symbolicatecrash 解析堆栈</h3><p><code>symbolicatecrash</code> 是 Xcode 自带的 crash 符号解析工具，可以自动搜索本地符号表，解析整个 crash 堆栈。</p>
+<h4 id="确认-Xcode-环境"><a href="#确认-Xcode-环境" class="headerlink" title="确认 Xcode 环境"></a>确认 Xcode 环境</h4><p>首先，需要确认 Xcode 的环境，执行以下代码，获取当前 Xcode 的目录。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/xcode-select -print-path</span><br></pre></td></tr></table></figure>
+<p>结果应该是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Applications/Xcode.app/Contents/Developer/</span><br></pre></td></tr></table></figure>
+<p>如果结果不是上述的路径，则指定一下路径：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo /usr/bin/xcode-select -switch /Applications/Xcode.app/Contents/Developer/</span><br></pre></td></tr></table></figure>
+<h4 id="准备好解析堆栈符号的工具：symbolicatecrash"><a href="#准备好解析堆栈符号的工具：symbolicatecrash" class="headerlink" title="准备好解析堆栈符号的工具：symbolicatecrash"></a>准备好解析堆栈符号的工具：symbolicatecrash</h4><p>需要先找到 symbolicatecrash 所在的路径，以 <code>Xcode 7.3</code> 版本为例，执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find /Applications/Xcode.app -name symbolicatecrash -type f</span><br></pre></td></tr></table></figure>
+<p>将会返回：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash</span><br></pre></td></tr></table></figure>
+<p>可以做一个快捷方式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alias symbolicatecrash &apos;/Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash&apos;</span><br></pre></td></tr></table></figure>
+<p>需要先配置好 <code>DEVELOPER_DIR</code>，否则会报错。如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer/</span><br></pre></td></tr></table></figure>
+<h4 id="开始解析"><a href="#开始解析" class="headerlink" title="开始解析"></a>开始解析</h4><p>准备好 dSYM 文件和 app 文件，可以存放在任何位置，只要 mac 系统的 spotlight 能够找到就行。<br>接着执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">symbolicatecrash xxx.crash</span><br></pre></td></tr></table></figure></p>
+<p>就可以解析符号了。</p>
+<h4 id="找不到符号的解决方法"><a href="#找不到符号的解决方法" class="headerlink" title="找不到符号的解决方法"></a>找不到符号的解决方法</h4><p>首先，需要确认一下符号表是不是正确的。可以通过以下方式看看符号文件和堆栈是否是对应的 (判断 uuid 是否相同)：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dwarfdump --uuid MyApp.app/MyApp</span><br><span class="line">dwarfdump --uuid xxx.app.dSYM/Contents/DWARF/Resources/MyApp</span><br><span class="line">grep &quot;0x.*com.wison.xxx .*&lt;&quot; NoSymbolsTestxxx.crash</span><br></pre></td></tr></table></figure></p>
+<p>如果不一样，那么说明崩溃堆栈和符号文件对应不上，很可能是搞错版本，或者打包的时候有问题导致符号文件生成不正确。<br>如果输出一样的 uuid，那么就是对应的，此时 <code>symbolicatecrash</code> 应该可以正常解析符号。<br>如果还是不能正确解析，那么很可能是 mdfind 自动查找的问题。<br>Xcode 找符号文件的时候，是通过 mdfind 来找的，比如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mdfind &apos;com_apple_xcode_dsym_uuids = *&apos;</span><br></pre></td></tr></table></figure>
+<p>该命令会把当前环境下的所有符号文件找出来。<br>如果你的符号文件不在此列表中，说明 mdfind 找不到我们的符号，</p>
+<p>那么就在执行 <code>symbolicatecrash</code> 的时候显式指定dSYM文件的路径：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">symbolicatecrash xxx.crash xxx.dSYM/Contents/Resources/DWARF/MyApp</span><br></pre></td></tr></table></figure>
+<p>如果还是不能解析，试一试把 App 文件也指定：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">symbolicatecrash xxx.crash xxx.dSYM/Contents/Resources/DWARF/MyApp MyApp.app/MyApp</span><br></pre></td></tr></table></figure>
+<h3 id="使用-atos-解析单个符号"><a href="#使用-atos-解析单个符号" class="headerlink" title="使用 atos 解析单个符号"></a>使用 atos 解析单个符号</h3><p>有时候我们需要解析单个地址的符号，比如 <code>lr</code> 寄存器的地址对应的符号，就需要用到 <code>atos</code><br>用法如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">atos  -arch [armv7 or arm64] -o [BinaryFile or dSYMFile] -l loadAddress address</span><br></pre></td></tr></table></figure></p>
+<p>其中<br><code>-arch</code> 指定二进制的架构，比如 armv7，armv7s，arm64 等等。<br><code>-o</code> 指定符号文件，可以是 dSYM 文件，也可以是包含了符号表的可执行文件。<br><code>-l</code> 是加载地址，由于 Xcode 默认打开 PIE 选项，所以加载地址每次都不一样，所以需要指定，可以在 crash 堆栈的 Binary Image 那段看到应用的加载地址。<br>最后一个参数是需要解析符号的地址。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/09/Code-Review-CheckList-1/" rel="next" title="Code Review CheckList 1">
+                <i class="fa fa-chevron-left"></i> Code Review CheckList 1
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="Wison Lin" />
+          <p class="site-author-name" itemprop="name">Wison Lin</p>
+          <p class="site-description motion-element" itemprop="description">Happy Coding, Happy Living</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        <div class="links-of-blogroll motion-element">
+          
+        </div>
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-symbolicatecrash-解析堆栈"><span class="nav-number">1.</span> <span class="nav-text">使用 symbolicatecrash 解析堆栈</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#确认-Xcode-环境"><span class="nav-number">1.1.</span> <span class="nav-text">确认 Xcode 环境</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#准备好解析堆栈符号的工具：symbolicatecrash"><span class="nav-number">1.2.</span> <span class="nav-text">准备好解析堆栈符号的工具：symbolicatecrash</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#开始解析"><span class="nav-number">1.3.</span> <span class="nav-text">开始解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#找不到符号的解决方法"><span class="nav-number">1.4.</span> <span class="nav-text">找不到符号的解决方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-atos-解析单个符号"><span class="nav-number">2.</span> <span class="nav-text">使用 atos 解析单个符号</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wison Lin</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+
+  
+
+
+
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js"></script>
+
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=0.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=0.5.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=0.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=0.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
