@@ -57,19 +57,15 @@
 
 
 
-<meta name="description" content="Unlike Objective-C, Swift enables you to set sub-properties of a structure property directly.
-跟 Objective-C 不一样，Swift 中的一个属性是结构体的话，这个结构体的变量是可以被直接改变的。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Swift Highlight 1">
-<meta property="og:url" content="http://wisonlin.github.com/2016/04/04/Swift-Highlight-1/index.html">
+<meta name="description" content="Happy Coding, Happy Living">
+<meta property="og:type" content="website">
+<meta property="og:title" content="苹果君的博客">
+<meta property="og:url" content="http://wisonlin.github.com/page/2/index.html">
 <meta property="og:site_name" content="苹果君的博客">
-<meta property="og:description" content="Unlike Objective-C, Swift enables you to set sub-properties of a structure property directly.
-跟 Objective-C 不一样，Swift 中的一个属性是结构体的话，这个结构体的变量是可以被直接改变的。">
-<meta property="og:updated_time" content="2016-04-05T16:54:46.000Z">
+<meta property="og:description" content="Happy Coding, Happy Living">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift Highlight 1">
-<meta name="twitter:description" content="Unlike Objective-C, Swift enables you to set sub-properties of a structure property directly.
-跟 Objective-C 不一样，Swift 中的一个属性是结构体的话，这个结构体的变量是可以被直接改变的。">
+<meta name="twitter:title" content="苹果君的博客">
+<meta name="twitter:description" content="Happy Coding, Happy Living">
 
 
 
@@ -87,7 +83,7 @@
   };
 </script>
 
-  <title> Swift Highlight 1 | 苹果君的博客 </title>
+  <title> 苹果君的博客 </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -108,7 +104,9 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left page-post-detail ">
+  <div class="container one-collumn sidebar-position-left 
+   page-home 
+ ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -185,9 +183,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-
-  <div id="posts" class="posts-expand">
+  <section id="posts" class="posts-expand">
     
+      
 
   
   
@@ -207,7 +205,10 @@
             
             
               
-                Swift Highlight 1
+                
+                <a class="post-title-link" href="/2012/03/03/2012-03-03-ios-viewcontrollerde-sheng-ming-zhou-qi-ji-qi-jia-zai-viewde-bu-zou/" itemprop="url">
+                  [iOS] ViewController的生命周期及其加载View的步骤
+                </a>
               
             
           </h1>
@@ -219,11 +220,30 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-04-04T00:32:27+08:00" content="2016-04-04">
-              2016-04-04
+            <time itemprop="dateCreated" datetime="2012-03-03T12:17:08+08:00" content="2012-03-03">
+              2012-03-03
             </time>
           </span>
 
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/iOS/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
           
 
           
@@ -246,26 +266,18 @@
       
 
       
-        <blockquote>
-<p>Unlike Objective-C, Swift enables you to set sub-properties of a structure property directly.</p>
-<p>跟 Objective-C 不一样，Swift 中的一个属性是结构体的话，这个结构体的变量是可以被直接改变的。</p>
-</blockquote>
-<a id="more"></a>
-<p>比如在 Objective-C 中，以下代码会编译错误：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.frame.size.width = 2.0;  // compile error</span><br></pre></td></tr></table></figure></p>
-<p>必须这样写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CGRect newFrame = view.frame;</span><br><span class="line">newFrame.size.width = 2.0;</span><br><span class="line">view.frame = newFrame;</span><br></pre></td></tr></table></figure></p>
-<p>在 Swift 中，则可以直接更改：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.frame.size.width = 2.0;  // compile success</span><br></pre></td></tr></table></figure></p>
-<p>上述这个改变视图宽高的例子，出现的场景比较常见，所以在 Objective-C 中其实有一种简单的方法，就是创建一个 Category，收归这些代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// in Category of UIView</span><br><span class="line">- (void)setWidth:(CGFloat)width</span><br><span class="line">&#123;</span><br><span class="line">  CGRect newFrame = view.frame;</span><br><span class="line">  newFrame.size.width = 2.0;</span><br><span class="line">  view.frame = newFrame;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这样，使用的时候就不会太罗嗦：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">view.width = 2.0;</span><br></pre></td></tr></table></figure></p>
-<blockquote>
-<p>Swift 刚出的时候学过一次，但是中间又好久没碰所以忘得差不多了，趁着 Swift 3.0 即将到来，赶紧重温了一下 Swift 2.2，这一次我想通过一系列的文章来沉淀，帮助记忆。不过现在网上关于 Swift 的技术文章实在太多，优秀的也非常多，所以我想从另一个角度去讲解 Swift，取名 <code>Swift Highlight</code>，写一些 Swift 相比老旧的 Objective-C 来说，令人眼前一亮的地方，或者它解决了 Objective-C 一些令人诟病的地方。希望能够让大家在学习 Swift 特性的同时也能够知道 Swift 为什么要这么做，好在哪里，也能够对 Objective-C 有更深层次的认识。</p>
-</blockquote>
-
+        
+          <p>首先先阐明ViewController的职责：对内管理与之关联的View，对外跟其他ViewController通信和协调。对于与之关联的View，ViewController总是在需要的时候才加载视图，并在不需要的时候卸载视图，所以也同时担当了管理应用资源的责任。理解ViewController的LifeCycle（生命周期），能够有效地管理应用资源。</p>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2012/03/03/2012-03-03-ios-viewcontrollerde-sheng-ming-zhou-qi-ji-qi-jia-zai-viewde-bu-zou/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
       
     </div>
 
     <div>
-      
-        
       
     </div>
 
@@ -273,36 +285,23 @@
       
 
       
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2014/10/19/2014-10-19-ios8-zhuan-ping-bug-hui-zong/" rel="next" title="iOS8 转屏 Bug 汇总">
-                <i class="fa fa-chevron-left"></i> iOS8 转屏 Bug 汇总
-              </a>
-            
-          </div>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/04/05/Swift-Highlight-2/" rel="prev" title="Swift Highlight 2">
-                Swift Highlight 2 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
 
       
+      
+        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
+    
+  </section>
 
-    <div class="post-spread">
-      
-    </div>
-  </div>
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
+
 
 
           </div>
@@ -310,10 +309,6 @@
 
 
           
-  <div class="comments" id="comments">
-    
-  </div>
-
 
         </div>
         
@@ -333,17 +328,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview sidebar-panel ">
+      <section class="site-overview sidebar-panel  sidebar-panel-active ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/default_avatar.jpg"
@@ -388,17 +374,6 @@
 
       </section>
 
-      
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-            
-              
-            
-            
-              <p class="post-toc-empty">此文章未包含目录</p>
-            
-          </div>
-        </section>
       
 
     </div>
@@ -483,10 +458,6 @@
   
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=0.5.0"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=0.5.0"></script>
-
-
 
   
 
