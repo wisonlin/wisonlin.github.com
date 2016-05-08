@@ -63,7 +63,7 @@
 <meta property="og:url" content="http://wisonlin.github.com/2016/04/09/解析-crash-堆栈/index.html">
 <meta property="og:site_name" content="苹果君的博客">
 <meta property="og:description" content="本文介绍了如何解析 iOS 的 crash 堆栈，分别使用了 symbolicatecrash 来自动解析整个堆栈，以及使用 atos 来解析单个地址的符号。在 iOS 开发中，解决 crash 问题是比较常见的工作。其中能够解析出符号当然是定位问题的开始。实际工作中，也有看到很多人其实会卡在解析符号这里，遇到这种情况，可以按照本文中的做法解决。">
-<meta property="og:updated_time" content="2016-04-09T13:47:29.000Z">
+<meta property="og:updated_time" content="2016-05-08T09:46:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="解析 crash 堆栈">
 <meta name="twitter:description" content="本文介绍了如何解析 iOS 的 crash 堆栈，分别使用了 symbolicatecrash 来自动解析整个堆栈，以及使用 atos 来解析单个地址的符号。在 iOS 开发中，解决 crash 问题是比较常见的工作。其中能够解析出符号当然是定位问题的开始。实际工作中，也有看到很多人其实会卡在解析符号这里，遇到这种情况，可以按照本文中的做法解决。">
@@ -256,12 +256,12 @@
 <p>将会返回：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash</span><br></pre></td></tr></table></figure>
 <p>可以做一个快捷方式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alias symbolicatecrash &apos;/Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash&apos;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alias symbolicatecrash=&apos;/Applications/Xcode.app/Contents/SharedFrameworks/DVTFoundation.framework/Versions/A/Resources/symbolicatecrash&apos;</span><br></pre></td></tr></table></figure>
 <p>需要先配置好 <code>DEVELOPER_DIR</code>，否则会报错。如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer/</span><br></pre></td></tr></table></figure>
 <h4 id="开始解析"><a href="#开始解析" class="headerlink" title="开始解析"></a>开始解析</h4><p>准备好 dSYM 文件和 app 文件，可以存放在任何位置，只要 mac 系统的 spotlight 能够找到就行。<br>接着执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">symbolicatecrash xxx.crash</span><br></pre></td></tr></table></figure></p>
 <p>就可以解析符号了。</p>
-<h4 id="找不到符号的解决方法"><a href="#找不到符号的解决方法" class="headerlink" title="找不到符号的解决方法"></a>找不到符号的解决方法</h4><p>首先，需要确认一下符号表是不是正确的。可以通过以下方式看看符号文件和堆栈是否是对应的 (判断 uuid 是否相同)：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dwarfdump --uuid MyApp.app/MyApp</span><br><span class="line">dwarfdump --uuid xxx.app.dSYM/Contents/DWARF/Resources/MyApp</span><br><span class="line">grep &quot;0x.*com.wison.xxx .*&lt;&quot; NoSymbolsTestxxx.crash</span><br></pre></td></tr></table></figure></p>
+<h4 id="找不到符号的解决方法"><a href="#找不到符号的解决方法" class="headerlink" title="找不到符号的解决方法"></a>找不到符号的解决方法</h4><p>首先，需要确认一下符号表是不是正确的。可以通过以下方式看看符号文件和堆栈是否是对应的 (判断 uuid 是否相同)：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dwarfdump --uuid MyApp.app/MyApp</span><br><span class="line">dwarfdump --uuid xxx.app.dSYM/Contents/Resources/DWARF/Resources/MyApp</span><br><span class="line">grep &quot;0x.*com.wison.xxx .*&lt;&quot; NoSymbolsTestxxx.crash</span><br></pre></td></tr></table></figure></p>
 <p>如果不一样，那么说明崩溃堆栈和符号文件对应不上，很可能是搞错版本，或者打包的时候有问题导致符号文件生成不正确。<br>如果输出一样的 uuid，那么就是对应的，此时 <code>symbolicatecrash</code> 应该可以正常解析符号。<br>如果还是不能正确解析，那么很可能是 mdfind 自动查找的问题。<br>Xcode 找符号文件的时候，是通过 mdfind 来找的，比如：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mdfind &apos;com_apple_xcode_dsym_uuids = *&apos;</span><br></pre></td></tr></table></figure>
 <p>该命令会把当前环境下的所有符号文件找出来。<br>如果你的符号文件不在此列表中，说明 mdfind 找不到我们的符号，</p>
