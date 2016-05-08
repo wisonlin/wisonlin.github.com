@@ -41,7 +41,7 @@
 <link href="/css/main.css?v=0.5.0" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="iOS,crash,dSYM," />
 
 
 
@@ -63,7 +63,7 @@
 <meta property="og:url" content="http://wisonlin.github.com/2016/04/09/解析-crash-堆栈/index.html">
 <meta property="og:site_name" content="苹果君的博客">
 <meta property="og:description" content="本文介绍了如何解析 iOS 的 crash 堆栈，分别使用了 symbolicatecrash 来自动解析整个堆栈，以及使用 atos 来解析单个地址的符号。在 iOS 开发中，解决 crash 问题是比较常见的工作。其中能够解析出符号当然是定位问题的开始。实际工作中，也有看到很多人其实会卡在解析符号这里，遇到这种情况，可以按照本文中的做法解决。">
-<meta property="og:updated_time" content="2016-05-08T10:31:19.000Z">
+<meta property="og:updated_time" content="2016-05-08T11:14:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="解析 crash 堆栈">
 <meta name="twitter:description" content="本文介绍了如何解析 iOS 的 crash 堆栈，分别使用了 symbolicatecrash 来自动解析整个堆栈，以及使用 atos 来解析单个地址的符号。在 iOS 开发中，解决 crash 问题是比较常见的工作。其中能够解析出符号当然是定位问题的开始。实际工作中，也有看到很多人其实会卡在解析符号这里，遇到这种情况，可以按照本文中的做法解决。">
@@ -173,6 +173,16 @@
               <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
             
             关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-tags fa-fw"></i> <br />
+            
+            标签
           </a>
         </li>
       
@@ -312,6 +322,16 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag">#iOS</a>
+          
+            <a href="/tags/crash/" rel="tag">#crash</a>
+          
+            <a href="/tags/dSYM/" rel="tag">#dSYM</a>
+          
+        </div>
+      
 
       
         <div class="post-nav">
@@ -407,10 +427,10 @@
 
           
             <div class="site-state-item site-state-tags">
-              
-                <span class="site-state-item-count">1</span>
+              <a href="/tags">
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">标签</span>
-              
+              </a>
             </div>
           
 
