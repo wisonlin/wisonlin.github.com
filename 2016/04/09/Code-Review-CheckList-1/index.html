@@ -57,28 +57,19 @@
 
 
 
-<meta name="description" content="1. 充分利用 Modern Objective-C
-@property 不用写 @synthesize。
-
-使用 literal 来定义容器。
-123456[NSNumber numberWithInteger:2]    =&amp;gt; @(2)[NSArray arrayWithObjects:a, b, c]    =&amp;gt; @[a, b, c][NSDictionary dictionar">
+<meta name="description" content="本文记录了一些 Objective-C 上的一些最佳实践，作用是每个人都可以通过本文描述的规则，对其它团队成员进行 Code Review。
+另外，每个规则后面，会有一个规则代号，用中括号括起来，发现代码不符合某一条规则的时候，可以直接使用代号取代问题描述。比如看到某些代码不符合下面的第一条规则，可以在所在的代码行增加评论:[Be Modern]。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Code Review CheckList 1">
 <meta property="og:url" content="http://wisonlin.github.com/2016/04/09/Code-Review-CheckList-1/index.html">
 <meta property="og:site_name" content="苹果君的博客">
-<meta property="og:description" content="1. 充分利用 Modern Objective-C
-@property 不用写 @synthesize。
-
-使用 literal 来定义容器。
-123456[NSNumber numberWithInteger:2]    =&amp;gt; @(2)[NSArray arrayWithObjects:a, b, c]    =&amp;gt; @[a, b, c][NSDictionary dictionar">
-<meta property="og:updated_time" content="2016-05-08T16:29:34.000Z">
+<meta property="og:description" content="本文记录了一些 Objective-C 上的一些最佳实践，作用是每个人都可以通过本文描述的规则，对其它团队成员进行 Code Review。
+另外，每个规则后面，会有一个规则代号，用中括号括起来，发现代码不符合某一条规则的时候，可以直接使用代号取代问题描述。比如看到某些代码不符合下面的第一条规则，可以在所在的代码行增加评论:[Be Modern]。">
+<meta property="og:updated_time" content="2016-05-14T10:42:48.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Code Review CheckList 1">
-<meta name="twitter:description" content="1. 充分利用 Modern Objective-C
-@property 不用写 @synthesize。
-
-使用 literal 来定义容器。
-123456[NSNumber numberWithInteger:2]    =&amp;gt; @(2)[NSArray arrayWithObjects:a, b, c]    =&amp;gt; @[a, b, c][NSDictionary dictionar">
+<meta name="twitter:description" content="本文记录了一些 Objective-C 上的一些最佳实践，作用是每个人都可以通过本文描述的规则，对其它团队成员进行 Code Review。
+另外，每个规则后面，会有一个规则代号，用中括号括起来，发现代码不符合某一条规则的时候，可以直接使用代号取代问题描述。比如看到某些代码不符合下面的第一条规则，可以在所在的代码行增加评论:[Be Modern]。">
 
 
 
@@ -294,24 +285,34 @@
       
 
       
-        <h3 id="1-充分利用-Modern-Objective-C"><a href="#1-充分利用-Modern-Objective-C" class="headerlink" title="1. 充分利用 Modern Objective-C"></a>1. 充分利用 Modern Objective-C</h3><ol>
-<li><p><code>@property</code> 不用写 <code>@synthesize</code>。</p>
+        <p>本文记录了一些 Objective-C 上的一些最佳实践，作用是每个人都可以通过本文描述的规则，对其它团队成员进行 Code Review。</p>
+<p>另外，每个规则后面，会有一个规则代号，用中括号括起来，发现代码不符合某一条规则的时候，可以直接使用代号取代问题描述。比如看到某些代码不符合下面的第一条规则，可以在所在的代码行增加评论:<code>[Be Modern]</code>。</p>
+<a id="more"></a>
+<p>以下是规则：</p>
+<h3 id="1-充分利用-Modern-Objective-C-Be-Modern"><a href="#1-充分利用-Modern-Objective-C-Be-Modern" class="headerlink" title="1. 充分利用 Modern Objective-C [Be Modern]"></a>1. 充分利用 Modern Objective-C [Be Modern]</h3><ol>
+<li><p><code>@property</code> 不用写 <code>@synthesize</code>，除非自己同时定义了 setter 和 getter。</p>
 </li>
-<li><p>使用 literal 来定义容器。</p>
+<li><p>使用 literal 来定义常量对象。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[NSNumber numberWithInteger:2]</span><br><span class="line">    =&gt; @(2)</span><br><span class="line">[NSArray arrayWithObjects:a, b, c]</span><br><span class="line">    =&gt; @[a, b, c]</span><br><span class="line">[NSDictionary dictionaryWithObjectsAndKeys:oa, ka, ob, kb]</span><br><span class="line">    =&gt; @&#123;ka : oa, kb : ob&#125;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>利用匿名 category 来定义私有属性，和声明遵循的没必要公开的协议。</p>
-</li>
-<li><p>迭代方式尽量用 for in，可以避免操作越界。</p>
-</li>
 <li><p>使用 NS_ENUM 来声明枚举。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">typedef NS_ENUM(NSUInteger, POPAnimationEventType)</span><br><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><em>详细可参考 WWDC 2012 session 405 modern objective-c</em></p>
 </li>
 </ol>
-<h3 id="2-ARC-带来的变化"><a href="#2-ARC-带来的变化" class="headerlink" title="2. ARC 带来的变化"></a>2. ARC 带来的变化</h3><ol>
-<li><code>dealloc</code> 方法里面不需要释放成员变量的引用。</li>
+<h3 id="2-ARC-带来的变化-ARC"><a href="#2-ARC-带来的变化-ARC" class="headerlink" title="2. ARC 带来的变化 [ARC]"></a>2. ARC 带来的变化 [ARC]</h3><ol>
+<li><p><code>dealloc</code> 方法里面不需要释放成员变量的引用。</p>
+</li>
+<li><p><code>delegate</code>(委托)作为属性要用 weak 修饰，避免循环引用和野指针。一些系统的老接口，需要确保 <code>dealloc</code> 的时候将 <code>delegate</code> 置 nil。</p>
+</li>
 </ol>
-<h3 id="3-多线程问题"><a href="#3-多线程问题" class="headerlink" title="3. 多线程问题"></a>3. 多线程问题</h3><ol>
+<h3 id="3-封装"><a href="#3-封装" class="headerlink" title="3. 封装"></a>3. 封装</h3><ol>
+<li>利用匿名 category 来定义私有属性，和声明遵循的没必要公开的协议。</li>
+</ol>
+<h3 id="4-越界"><a href="#4-越界" class="headerlink" title="4. 越界"></a>4. 越界</h3><ol>
+<li>迭代方式尽量用 for in，可以避免操作越界。</li>
+</ol>
+<h3 id="5-多线程问题"><a href="#5-多线程问题" class="headerlink" title="5. 多线程问题"></a>5. 多线程问题</h3><ol>
 <li><p><code>synchronize</code> 和 <code>dispatch_once</code></p>
 <p> 尽量用 <code>dispatch_once</code>，性能不错，某些场合语义也会更加清晰。<br> 在 Qzone 里面，定义单件可直接使用宏 QZONE_SINGLETON_INTERFACE。</p>
 </li>
@@ -319,15 +320,15 @@
 <p> 多线程中，容器的 property 加了 atomic 只能保证获取和设置容器变量是原子操作，<br> 但是容器本身不是线程安全的，需要另外加锁。<br> 具体实现中，应当尽量避免多线程访问同一个容器的情况，减少锁的使用。</p>
 </li>
 </ol>
-<h3 id="4-对对象生命周期的把控"><a href="#4-对对象生命周期的把控" class="headerlink" title="4. 对对象生命周期的把控"></a>4. 对对象生命周期的把控</h3><ol>
+<h3 id="6-对对象生命周期的把控"><a href="#6-对对象生命周期的把控" class="headerlink" title="6. 对对象生命周期的把控"></a>6. 对对象生命周期的把控</h3><ol>
 <li><p><code>NSTimer</code> 和 <code>performSelector:afterDelay:</code> 都会持有对象，需要在适当的时机打破循环引用。</p>
 </li>
 <li><p>以上这两个 API，也需要在适当的场景停止运行，否则会增加耗电量，挂后台的时候会更快地被系统 kill 掉等等。</p>
 </li>
 </ol>
-<h3 id="5-调用了基类提供的只能用来重写的方法"><a href="#5-调用了基类提供的只能用来重写的方法" class="headerlink" title="5. 调用了基类提供的只能用来重写的方法"></a>5. 调用了基类提供的只能用来重写的方法</h3><p>  比如 <code>layoutSubviews</code>，<code>drawRect</code>，<code>touchBegan</code> 等等，具体需要熟悉文档。</p>
-<h3 id="6-重写基类方法时，没有在实现中调用基类方法"><a href="#6-重写基类方法时，没有在实现中调用基类方法" class="headerlink" title="6. 重写基类方法时，没有在实现中调用基类方法"></a>6. 重写基类方法时，没有在实现中调用基类方法</h3><p>  比如 <code>viewDidLoad</code>, <code>viewWillAppear</code>, <code>prepareForReuse</code> 等等，具体需要熟悉文档。</p>
-<h3 id="7-关注性能"><a href="#7-关注性能" class="headerlink" title="7. 关注性能"></a>7. 关注性能</h3><ol>
+<h3 id="7-调用了基类提供的只能用来重写的方法"><a href="#7-调用了基类提供的只能用来重写的方法" class="headerlink" title="7. 调用了基类提供的只能用来重写的方法"></a>7. 调用了基类提供的只能用来重写的方法</h3><p>  比如 <code>layoutSubviews</code>，<code>drawRect</code>，<code>touchBegan</code> 等等，具体需要熟悉文档。</p>
+<h3 id="8-重写基类方法时，没有在实现中调用基类方法"><a href="#8-重写基类方法时，没有在实现中调用基类方法" class="headerlink" title="8. 重写基类方法时，没有在实现中调用基类方法"></a>8. 重写基类方法时，没有在实现中调用基类方法</h3><p>  比如 <code>viewDidLoad</code>, <code>viewWillAppear</code>, <code>prepareForReuse</code> 等等，具体需要熟悉文档。</p>
+<h3 id="9-关注性能"><a href="#9-关注性能" class="headerlink" title="9. 关注性能"></a>9. 关注性能</h3><ol>
 <li><p>尽量不要触发 CPU 渲染</p>
 <p>尽量不使用 <code>[UIImage drawInRect]</code> 等 API。</p>
 </li>
@@ -335,12 +336,12 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">layer.cornerRadius = .5;</span><br><span class="line">layer.shouldRasterize = YES;</span><br><span class="line">layer.rasterizationScale = [UIScreen mainScreen].scale;</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
-<h3 id="8-关注可维护性"><a href="#8-关注可维护性" class="headerlink" title="8. 关注可维护性"></a>8. 关注可维护性</h3><ol>
+<h3 id="10-关注可维护性"><a href="#10-关注可维护性" class="headerlink" title="10. 关注可维护性"></a>10. 关注可维护性</h3><ol>
 <li>尽量不调用 <code>[UITableView reloadData]</code> 刷新整个列表<br>除非整个列表的数据都发生变化，否则不要刷新整个列表，<br>这样会让整个列表中的某些状态丢失，难以维护。推荐使用类似<br><code>[UITableView reloadCell:]</code>, <code>[UITableViewCell reset]</code><br>这样局部的刷新方式。</li>
 </ol>
-<h3 id="9-范型"><a href="#9-范型" class="headerlink" title="9. 范型"></a>9. 范型</h3><p>  过去：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSArray *viewList;</span><br><span class="line">((UIView *)viewList[0]).hidden = YES;</span><br></pre></td></tr></table></figure></p>
+<h3 id="11-范型"><a href="#11-范型" class="headerlink" title="11. 范型"></a>11. 范型</h3><p>  过去：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSArray *viewList;</span><br><span class="line">((UIView *)viewList[0]).hidden = YES;</span><br></pre></td></tr></table></figure></p>
 <p>  现在：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSArray&lt;UIView *&gt; *viewList;</span><br><span class="line">viewList[0].hidden = YES;</span><br></pre></td></tr></table></figure></p>
-<h3 id="10-拷贝"><a href="#10-拷贝" class="headerlink" title="10. 拷贝"></a>10. 拷贝</h3><ol>
+<h3 id="12-拷贝"><a href="#12-拷贝" class="headerlink" title="12. 拷贝"></a>12. 拷贝</h3><ol>
 <li><p>赋值</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">aList = bList;</span><br></pre></td></tr></table></figure>
 </li>
@@ -372,6 +373,12 @@
 <td style="text-align:center">2015-11-26</td>
 <td style="text-align:center">wisonlin</td>
 <td style="text-align:center">Add deep copy; Add generic type.</td>
+</tr>
+<tr>
+<td style="text-align:center">3.0</td>
+<td style="text-align:center">2016-5-12</td>
+<td style="text-align:center">wisonlin</td>
+<td style="text-align:center">增加问题标记，和使用说明。增加封装[]</td>
 </tr>
 </tbody>
 </table>
@@ -478,7 +485,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">13</span>
+              <span class="site-state-item-count">14</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -495,7 +502,7 @@
           
             <div class="site-state-item site-state-tags">
               <a href="/tags">
-                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -526,7 +533,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-充分利用-Modern-Objective-C"><span class="nav-number">1.</span> <span class="nav-text">1. 充分利用 Modern Objective-C</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-ARC-带来的变化"><span class="nav-number">2.</span> <span class="nav-text">2. ARC 带来的变化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-多线程问题"><span class="nav-number">3.</span> <span class="nav-text">3. 多线程问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-对对象生命周期的把控"><span class="nav-number">4.</span> <span class="nav-text">4. 对对象生命周期的把控</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-调用了基类提供的只能用来重写的方法"><span class="nav-number">5.</span> <span class="nav-text">5. 调用了基类提供的只能用来重写的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-重写基类方法时，没有在实现中调用基类方法"><span class="nav-number">6.</span> <span class="nav-text">6. 重写基类方法时，没有在实现中调用基类方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-关注性能"><span class="nav-number">7.</span> <span class="nav-text">7. 关注性能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-关注可维护性"><span class="nav-number">8.</span> <span class="nav-text">8. 关注可维护性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-范型"><span class="nav-number">9.</span> <span class="nav-text">9. 范型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-拷贝"><span class="nav-number">10.</span> <span class="nav-text">10. 拷贝</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-充分利用-Modern-Objective-C-Be-Modern"><span class="nav-number">1.</span> <span class="nav-text">1. 充分利用 Modern Objective-C [Be Modern]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-ARC-带来的变化-ARC"><span class="nav-number">2.</span> <span class="nav-text">2. ARC 带来的变化 [ARC]</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-封装"><span class="nav-number">3.</span> <span class="nav-text">3. 封装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-越界"><span class="nav-number">4.</span> <span class="nav-text">4. 越界</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-多线程问题"><span class="nav-number">5.</span> <span class="nav-text">5. 多线程问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-对对象生命周期的把控"><span class="nav-number">6.</span> <span class="nav-text">6. 对对象生命周期的把控</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-调用了基类提供的只能用来重写的方法"><span class="nav-number">7.</span> <span class="nav-text">7. 调用了基类提供的只能用来重写的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-重写基类方法时，没有在实现中调用基类方法"><span class="nav-number">8.</span> <span class="nav-text">8. 重写基类方法时，没有在实现中调用基类方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-关注性能"><span class="nav-number">9.</span> <span class="nav-text">9. 关注性能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-关注可维护性"><span class="nav-number">10.</span> <span class="nav-text">10. 关注可维护性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-范型"><span class="nav-number">11.</span> <span class="nav-text">11. 范型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-拷贝"><span class="nav-number">12.</span> <span class="nav-text">12. 拷贝</span></a></li></ol></div>
             
           </div>
         </section>
