@@ -63,7 +63,7 @@
 <meta property="og:url" content="http://wisonlin.github.com/2012/03/03/2012-03-03-ios-viewcontrollerde-sheng-ming-zhou-qi-ji-qi-jia-zai-viewde-bu-zou/index.html">
 <meta property="og:site_name" content="苹果君的博客">
 <meta property="og:description" content="首先先阐明ViewController的职责：对内管理与之关联的View，对外跟其他ViewController通信和协调。对于与之关联的View，ViewController总是在需要的时候才加载视图，并在不需要的时候卸载视图，所以也同时担当了管理应用资源的责任。理解ViewController的LifeCycle（生命周期），能够有效地管理应用资源。">
-<meta property="og:updated_time" content="2014-08-03T15:05:04.000Z">
+<meta property="og:updated_time" content="2016-07-03T09:41:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[iOS] ViewController的生命周期及其加载View的步骤">
 <meta name="twitter:description" content="首先先阐明ViewController的职责：对内管理与之关联的View，对外跟其他ViewController通信和协调。对于与之关联的View，ViewController总是在需要的时候才加载视图，并在不需要的时候卸载视图，所以也同时担当了管理应用资源的责任。理解ViewController的LifeCycle（生命周期），能够有效地管理应用资源。">
@@ -284,8 +284,7 @@
       
         <p>首先先阐明ViewController的职责：对内管理与之关联的View，对外跟其他ViewController通信和协调。对于与之关联的View，ViewController总是在需要的时候才加载视图，并在不需要的时候卸载视图，所以也同时担当了管理应用资源的责任。理解ViewController的LifeCycle（生命周期），能够有效地管理应用资源。</p>
 <a id="more"></a>
-<p>####<strong>ViewController的初始化：</strong></p>
-<p>从Storyboards中加载的时候，会调用initWithCode，如果不存在则调用init。之后对里面的每个对象调用awakeFromNib方法。<br>从内存中alloc出来的情况下，调init方法。<br>ViewController查找与其关联的view，其顺序是：</p>
+<h4 id="ViewController的初始化："><a href="#ViewController的初始化：" class="headerlink" title="ViewController的初始化："></a><strong>ViewController的初始化：</strong></h4><p>从Storyboards中加载的时候，会调用initWithCode，如果不存在则调用init。之后对里面的每个对象调用awakeFromNib方法。<br>从内存中alloc出来的情况下，调init方法。<br>ViewController查找与其关联的view，其顺序是：</p>
 <ol>
 <li><p>先判断子类是否重写了loadView，如果有直接调用。之后调viewDidLoad完成View的加载。</p>
 </li>
@@ -296,8 +295,7 @@
 <li><p>如果子类没有重写的loadView，则ViewController会从StroyBoards中找或者调用其默认的loadView，默认的loadView返回一个空白的UIView对象。<br>注意第一步，ViewController是判断子类是否重写了loadView，而不是判断调用子类的loadView之后ViewController的View是否为空。就是说，如果子类重写了loadView的话，不管子类在loadView里面能否获取到View，ViewController都会直接调viewDidLoad完成View的加载。</p>
 </li>
 </ol>
-<p>####<strong> ViewController的卸载View的步骤：</strong></p>
-<ol>
+<h4 id="ViewController的卸载View的步骤："><a href="#ViewController的卸载View的步骤：" class="headerlink" title=" ViewController的卸载View的步骤："></a><strong> ViewController的卸载View的步骤：</strong></h4><ol>
 <li>系统发出内存警告或者ViewController本身调用导致didReceiveMemoryWarning被调用</li>
 <li>如果此时view没有被加入到任何视图树上，则调用viewWillUnload之后释放View</li>
 <li>调用viewDidUnload</li>
@@ -445,7 +443,7 @@
               
             
             
-              <p class="post-toc-empty">此文章未包含目录</p>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#ViewController的初始化："><span class="nav-number">1.</span> <span class="nav-text">ViewController的初始化：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ViewController的卸载View的步骤："><span class="nav-number">2.</span> <span class="nav-text"> ViewController的卸载View的步骤：</span></a></li></ol></div>
             
           </div>
         </section>
